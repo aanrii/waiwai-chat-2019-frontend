@@ -5,7 +5,7 @@ export type MessageServiceClientAttached = {
   client: MessageServiceClient;
 };
 
-const client = new MessageServiceClient(`https://34.84.218.136`);
+const client = new MessageServiceClient(`/api`);
 
 const attachMessageServiceClient = <P extends {}>(
   WrappedComponent: React.ComponentType<P & MessageServiceClientAttached>
