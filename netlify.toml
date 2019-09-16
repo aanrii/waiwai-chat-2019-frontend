@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/api"
+  to = "https://34.84.218.136"
+  status = 200
+  force = true
