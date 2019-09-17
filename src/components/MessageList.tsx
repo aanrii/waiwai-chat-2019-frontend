@@ -19,20 +19,24 @@ class MessageList extends React.Component<void & MessageServiceClientAttached, M
   private numConnectAttempt = 0;
 
   attemptToConnectMessageStream() {
-    this.numConnectAttempt += 1;
-    if (this.numConnectAttempt >= MessageList.MAX_ATTEMPTS) {
-      return;
-    }
+    return new Promise((resolve, reject) => {
+      this.numConnectAttempt += 1;
+      if (this.numConnectAttempt >= MessageList.MAX_ATTEMPTS) {
+        reject(new Error('The number of connection attempt reaches its limit.'));
+        return;
+      }
 
-    const messageStream = this.state.messageServiceClient.getMessageStream(new Empty());
-    messageStream.on('data', message => {
-      const newProtoMessageList = [message].concat(this.state.protoMessageList);
-      this.setState({ protoMessageList: newProtoMessageList });
-      this.numConnectAttempt = 0;
-    });
-    messageStream.on('status', status => {
-      console.error(status);
-      setTimeout(() => this.attemptToConnectMessageStream(), 500);
+      const messageStream = this.state.messageServiceClient.getMessageStream(new Empty());
+      messageStream.on('data', message => {
+        const newProtoMessageList = [message].concat(this.state.protoMessageList);
+        this.setState({ protoMessageList: newProtoMessageList });
+        this.numConnectAttempt = 0;
+      });
+      messageStream.on('status', status => {
+        console.error(status);
+        setTimeout(() => this.attemptToConnectMessageStream(), 500);
+      });
+      resolve();
     });
   }
 
@@ -44,17 +48,17 @@ class MessageList extends React.Component<void & MessageServiceClientAttached, M
       messageServiceClient: props.client,
     };
 
-    this.attemptToConnectMessageStream();
-
-    props.client.getLatestMessageList(new Empty(), (err, response) => {
-      if (err) {
-        throw err;
-      } else if (!response) {
-        throw new Error('The server returns an empty response.');
-      }
-      this.setState({
-        protoMessageList: this.state.protoMessageList.concat(response.getMessageList()),
-        readLastId: response.getLastId(),
+    this.attemptToConnectMessageStream().then(() => {
+      props.client.getLatestMessageList(new Empty(), (err, response) => {
+        if (err) {
+          throw err;
+        } else if (!response) {
+          throw new Error('The server returns an empty response.');
+        }
+        this.setState({
+          protoMessageList: this.state.protoMessageList.concat(response.getMessageList()),
+          readLastId: response.getLastId(),
+        });
       });
     });
   }
