@@ -6,7 +6,7 @@ import { Message as ProtoMessage, GetMessagesByIdRangeRequest } from '../proto/M
 import attatchMessageServiceClient, { MessageServiceClientAttached } from './attatchMessageServiceClient';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import InfiniteScroll from 'react-infinite-scroller';
-import { MessageServiceClient } from '../proto/MessageService_pb_service';
+import { MessageServiceClient, ResponseStream, Status } from '../proto/MessageService_pb_service';
 
 interface MessageListState {
   protoMessageList: ProtoMessage[];
@@ -15,9 +15,12 @@ interface MessageListState {
 }
 
 class MessageList extends React.Component<void & MessageServiceClientAttached, MessageListState> {
-  connectToMessageStream(retryCount: number) {
-    if (retryCount >= 10) {
-      console.error('The number of connection retry reaches its limit.');
+  static readonly MAX_ATTEMPTS = 10;
+  private numConnectAttempt = 0;
+
+  attemptToConnectMessageStream() {
+    this.numConnectAttempt += 1;
+    if (this.numConnectAttempt >= MessageList.MAX_ATTEMPTS) {
       return;
     }
 
@@ -25,9 +28,11 @@ class MessageList extends React.Component<void & MessageServiceClientAttached, M
     messageStream.on('data', message => {
       const newProtoMessageList = [message].concat(this.state.protoMessageList);
       this.setState({ protoMessageList: newProtoMessageList });
+      this.numConnectAttempt = 0;
     });
-    messageStream.on('end', () => {
-      setTimeout(() => this.connectToMessageStream(retryCount + 1), 500);
+    messageStream.on('status', status => {
+      console.error(status);
+      setTimeout(() => this.attemptToConnectMessageStream(), 500);
     });
   }
 
@@ -39,7 +44,7 @@ class MessageList extends React.Component<void & MessageServiceClientAttached, M
       messageServiceClient: props.client,
     };
 
-    this.connectToMessageStream(0);
+    this.attemptToConnectMessageStream();
 
     props.client.getLatestMessageList(new Empty(), (err, response) => {
       if (err) {
@@ -65,9 +70,6 @@ class MessageList extends React.Component<void & MessageServiceClientAttached, M
       }
 
       if (!response || response.getMessageList().length === 0) {
-        if (response) {
-          console.log(response.getLastId());
-        }
         console.error('getMessageListByIdRange response is null');
         this.setState({
           readLastId: -1,
