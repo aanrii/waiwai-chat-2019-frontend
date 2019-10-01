@@ -5,7 +5,7 @@ export type MessageServiceClientAttached = {
   client: MessageServiceClient;
 };
 
-const client = new MessageServiceClient(`/api`);
+const client = new MessageServiceClient(`https://waiwai-chat-2019.aanrii.xyz`);
 
 const attachMessageServiceClient = <P extends {}>(
   WrappedComponent: React.ComponentType<P & MessageServiceClientAttached>
