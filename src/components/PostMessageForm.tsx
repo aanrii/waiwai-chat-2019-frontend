@@ -37,7 +37,7 @@ const PostMessageForm: React.FC<{ authorName: string } & MessageServiceClientAtt
 
   return (
     <div>
-      名前: {authorName}
+      名前: <b>{authorName}</b>
       <br />
       <form onSubmit={handleSubmit}>
         <input
@@ -47,6 +47,10 @@ const PostMessageForm: React.FC<{ authorName: string } & MessageServiceClientAtt
           onChange={e => setInputText(e.target.value)}
           disabled={isLoading}
           maxLength={MAX_INPUT_TEXT_LENGTH}
+          css={{
+            marginRight: `10px`,
+            width: `80%`,
+          }}
         />
         <input type="submit" value="発言" disabled={isLoading} />
         {errorMessage.length > 0 ? (

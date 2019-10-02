@@ -10,6 +10,7 @@ const Main: React.SFC<{}> = () => (
     css={{
       marginLeft: `auto`,
       marginRight: `auto`,
+      padding: `10px`,
       maxWidth: `640px`,
       display: `block`,
       // height: `100vh`,
