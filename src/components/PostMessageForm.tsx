@@ -49,7 +49,7 @@ const PostMessageForm: React.FC<{ authorName: string } & MessageServiceClientAtt
           maxLength={MAX_INPUT_TEXT_LENGTH}
           css={{
             marginRight: `10px`,
-            width: `80%`,
+            width: `70%`,
           }}
         />
         <input type="submit" value="発言" disabled={isLoading} />

@@ -22,7 +22,7 @@ const SetAuthorNameForm: React.FC<{ initialInputText?: string; setAuthorNameFunc
           onChange={e => setInputText(e.target.value)}
           css={{
             marginRight: `10px`,
-            width: `80%`,
+            width: `70%`,
           }}
         />
         <input type="submit" value="入室" />
