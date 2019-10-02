@@ -7,7 +7,7 @@ const Message: React.SFC<ProtoMessage.AsObject> = protoMessage => {
   return (
     <div>
       <div>
-        {protoMessage.authorName} > {protoMessage.text} ({formattedDateStr})
+        <b>{protoMessage.authorName}</b> > {protoMessage.text} ({formattedDateStr})
       </div>
       <hr />
     </div>

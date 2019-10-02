@@ -47,9 +47,6 @@ const PostMessageForm: React.FC<{ authorName: string } & MessageServiceClientAtt
           onChange={e => setInputText(e.target.value)}
           disabled={isLoading}
           maxLength={MAX_INPUT_TEXT_LENGTH}
-          css={{
-            width: `400px`,
-          }}
         />
         <input type="submit" value="発言" disabled={isLoading} />
         {errorMessage.length > 0 ? (
